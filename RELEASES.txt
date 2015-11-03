@@ -1,0 +1,14 @@
+
+Version: 0.2 (future release)
+
+* Adapt the output model with IMITATOR's new feature "urgent location".
+  ** Eliminate "urgent clocks"
+
+* Eliminate the "d_clock" of each task, as the tracking of deadline-miss
+  can be done with the arrival clock "arr_x".
+
+
+
+---------------------------------------
+Version: 0.1
+Date:    10/1/2014

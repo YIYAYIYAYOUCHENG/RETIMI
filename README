@@ -1,0 +1,27 @@
+
+
+
+                            RETIMI
+              -----------------------------------------
+              Author:  Giuseppe Lipari and Youcheng Sun
+              Date: 3 November 2015
+              Contact: y.sun@sssup.it
+              References:  Toward Parametric Timed Interfaces for Real-Time Components (2014) 
+                            by Youcheng Sun, Giuseppe Lipari, Étienne André and Laurent Fribourg
+
+RETIMI is a set of python scripts for tranlsting a REal-Time system
+to a formal automaton model that can be analysed with IMITATOR.
+
+To run the program you need to have a txt file that specifies the
+system you want to analyse. An example can be found in file example.txt
+
+An example is:
+
+   python generator.py example.txt
+
+This will generate file example.imi and run imitator on in. 
+The program expects that the exec file of imitaror is found in the 
+parent directory of where the program is launched. 
+
+
+ 
