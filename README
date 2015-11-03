@@ -7,7 +7,7 @@ Author:  Giuseppe Lipari and Youcheng Sun
 Date: 3rd November 2015
 Contact: y.sun@sssup.it
 
-References:  Toward Parametric Timed Interfaces for Real-Time Components (2014) by Youcheng Sun, Giuseppe Lipari, Étienne André and Laurent Fribourg
+References: "Toward Parametric Timed Interfaces for Real-Time Components" (2014) by Youcheng Sun, Giuseppe Lipari, Étienne André and Laurent Fribourg
 -----------------------------------------
 
 RETIMI is a set of python scripts for tranlsting a REal-Time system
