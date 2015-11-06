@@ -18,7 +18,7 @@ system you want to analyse. An example can be found in file example.txt
 
 An example is:
 
-   python generator.py example.txt
+   python generator.py --norun example.txt
 
 This will generate file example.imi and run imitator on in. 
 The program expects that the exec file of imitaror is found in the 
