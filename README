@@ -21,8 +21,8 @@ An example is:
    python generator.py --norun example.txt
 
 This will generate file example.imi and example.v0, and later you can 
-run imitator with them. The program expects that the exec file of imitaror is 
-found in the parent directory of where the program is launched. 
+run imitator with them. The program expects that the exec file of imitator
+is found in the parent directory of where the program is launched. 
 
 
  
