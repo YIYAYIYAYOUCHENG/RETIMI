@@ -1,0 +1,4 @@
+-- "ptask" refers to an implicit-deadline task, i.e., the task's period is equivalent to its relative deadline.
+ptask name = t1, ctime = 2, period = 5
+ptask name = t2, ctime = [2..10], period = [3..10]
+idlesched CPU1,t1,t2

@@ -28,6 +28,13 @@ class periodic_automaton(base_generator) :
                                                            self.loc("arr"), 
                                                            self.x_clock,
                                                            self.PER)
+    def gen_init_param(self):
+        if self.ini_period == "" or self.ini_period.find("..") != -1 or self.ini_period.find("[") != -1 : 
+            per = self.ini_period.strip('[').strip(']')
+            lper = per.split("..")
+            return "    {1} <= {0} & {0} <= {2} & \n".format(self.PER, lper[0], lper[1])
+        else : return ""
+
     
     def gen_automaton(self) :
         self.out = StringIO.StringIO()

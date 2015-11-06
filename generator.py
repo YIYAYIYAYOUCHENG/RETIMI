@@ -124,7 +124,9 @@ def parse_input(inputfile) :
     ll = []
     tnames = []
     for l in lines :
-        if l.startswith('task') :
+        if l.startswith("--"):
+            continue
+        elif l.startswith('task') :
             l = l.lstrip('task')
             task = parse_ptask(l)
             ll.append(task_automaton(task['name'], task['ctime'], task['deadline'], task['max_inst']))
@@ -213,6 +215,7 @@ def generate_imi(out, ll) :
 
     for x in ll :
         out.write(x.gen_init())
+        out.write(x.gen_init_param())
     out.write("    True;\n")
     out.write("property := unreachable loc[OBS_dline] = dline_loc_miss\n")
     out.close()
@@ -258,6 +261,7 @@ def main() :
     # Generate the v0 file
     v0 = open(v0file, 'w')
     print_list(v0, lambda x: x.gen_parvalues(), ll, '&')
+
     v0.close()
 
     # if necessary, runs imitator

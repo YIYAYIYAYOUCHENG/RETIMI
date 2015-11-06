@@ -44,6 +44,9 @@ class base_generator :
     def gen_init(self) :
         return ""
 
+    def gen_init_param(self) :
+        return ""
+
     ######
     #  Internal functions
     ######

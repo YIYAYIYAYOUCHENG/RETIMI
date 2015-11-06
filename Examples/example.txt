@@ -1,3 +1,0 @@
-ptask name = t1, ctime = 2, period = [5..7]
-ptask name = t2, ctime = 2, period = [7..10]
-idlesched CPU1,t1,t2

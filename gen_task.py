@@ -184,9 +184,18 @@ class task_impldline_automaton(task_automaton) :
     def gen_init(self) :
         s = "    loc[{0}] = {1} &\n".format(self.get_automaton_name(), self.loc("idle"))
         s = s + "    {0} >= 0 &".format(self.CTIME)
-        s = s + "    {0} = 0 &".format(self.urgent)
+        s = s #+ "    {0} = 0 &".format(self.urgent)
         s = s + "    {0} = 0 & \n".format(self.c_clock)
         return s
+
+    def gen_init_param(self):
+        if self.ini_ctime == "" or self.ini_ctime.find("..") != -1 or self.ini_ctime.find("[") != -1 : 
+            x = self.ini_ctime.strip('[').strip(']')
+            lx = x.split("..")
+            return "    {0} <= {1} & {2} <= {0} & {0} <= {3} & \n".format(self.CTIME, self.DTIME, lx[0], lx[1])
+        else:
+            return "    {0} <= {1} & \n".format(self.CTIME, self.DTIME)
+
 
     def gen_automaton(self) :
         s = "automaton {0}\n".format(self.get_automaton_name())
@@ -200,10 +209,10 @@ class task_impldline_automaton(task_automaton) :
         s = s + self.wloc("idle", "True", "wait")
         s = s + self.wgrd("True", 
                           sync = self.sync("arr_event"),
-                          act = ass(self.urgent, "0"),
+                          act = "", #ass(self.urgent, "0"),
                           target = "act_event")
         
-        s = s + self.wloc("act_event", 
+        s = s + "urgent " + self.wloc("act_event", 
                           inv = " True", #self.urgent + " <= 0",
                           stop = "wait")
         s = s + self.wgrd("True", #expr(self.urgent, "=", "0"), 

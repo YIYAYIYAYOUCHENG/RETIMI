@@ -7,6 +7,10 @@ Version: 0.2 (future release)
 * Eliminate the "d_clock" of each task, as the tracking of deadline-miss
   can be done with the arrival clock "arr_x".
 
+* Allowed to comment within the input file
+
+* Added the initial constraint over parameters 
+
 
 
 ---------------------------------------
