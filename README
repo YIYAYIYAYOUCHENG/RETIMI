@@ -11,7 +11,7 @@ References: "Toward Parametric Timed Interfaces for Real-Time Components" (2014)
 -----------------------------------------
 
 RETIMI is a set of python scripts for tranlsting a REal-Time system
-to a formal automaton model that can be analysed with IMITATOR.
+to a formal automaton model that can be analysed with IMItator.
 
 To run the program you need to have a txt file that specifies the
 system you want to analyse. An example can be found in file example.txt
