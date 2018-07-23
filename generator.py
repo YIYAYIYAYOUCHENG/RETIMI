@@ -101,7 +101,7 @@ def parse_ptask(l) :
 def parse_curve(l) :
     cur = {}
     s = l.strip().split(',')
-    print s
+    #print s
     for x in s :
         prop_extract(x, 'name', cur)
         prop_extract(x, 'tname', cur)
@@ -174,7 +174,7 @@ def parse_input(inputfile) :
             cur = parse_curve(l)
             ll.append(arrival_curve_automaton(cur['name'], cur['tname'], cur['burst'], cur['period']))
         else :
-            print "ERROR in parsing the input file"
+            print("ERROR in parsing the input file")
             exit
     ll.append(miss_automaton("dline", tnames))
     return ll
@@ -234,7 +234,7 @@ def main() :
 
     args = parser.parse_args()
 
-    print "Options: ", args
+    print("Options: ", args)
 
     inputfile = args.file
     imifile = args.file 
@@ -250,7 +250,7 @@ def main() :
         v0file = v0file[0:-4] + ".v0"
         statesfile = statesfile[0:-4] + ".states"
         
-    print "Output files:", imifile, v0file
+    print("Output files:", imifile, v0file)
 
     out = open(imifile, 'w')
 
@@ -280,15 +280,15 @@ def main() :
         if args.depth > -1 :
             cmd = cmd + " -depth-limit {0}".format(args.depth)
 
-        print "Running command: ", cmd
+        print("Running command: ", cmd)
         os.system(cmd)
 
         if not args.cover :
             dmiss = search_dmiss(statesfile)                    
             if not dmiss : 
-                print "No Deadline misses"   
+                print("No Deadline misses")
             else :
-                print "DEADLINE MISS FOUND!!"
+                print("DEADLINE MISS FOUND!!")
 
 
 

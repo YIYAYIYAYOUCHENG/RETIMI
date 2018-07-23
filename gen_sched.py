@@ -1,6 +1,6 @@
 import copy
 from gen_base import *
-import StringIO
+import io
 import sys
 
 #  TBD: it is possible to extend this in several directions: 
@@ -50,7 +50,7 @@ class sched_automaton(base_generator) :
         return s
 
     def gen_automaton(self) :
-        self.out = StringIO.StringIO()
+        self.out = io.StringIO()
         self.out.write("automaton sched_{0}\n".format(self.name))
         self.out.write("synclabs : ")
         for i in range(0, self.ntasks) :
@@ -276,26 +276,26 @@ class sched_automaton(base_generator) :
 
 def main(args) :
     if len(args) < 3 :
-        print "Usage: gen_sched.py name <list of task indexes>"
+        print("Usage: gen_sched.py name <list of task indexes>")
         sys.exit(-1)
     task_list = args[2:]
 
     s = sched_automaton(args[1], task_list)
 
-    # print "(** DECLARATIONS **)"
-    # print s.gen_base()
+    # print("(** DECLARATIONS **)")
+    # print(s.gen_base())
 
-    print "(** CLOCKS **)"
-    print s.gen_clocks()
+    print("(** CLOCKS **)")
+    print(s.gen_clocks())
 
-    print "(** DISCRETE **)"
-    print s.gen_discrete()
+    print("(** DISCRETE **)")
+    print(s.gen_discrete())
 
-    print "(** AUTOMATON **)"
-    print s.gen_automaton()
+    print("(** AUTOMATON **)")
+    print(s.gen_automaton())
 
-    print "(** INITIALIZATION **)"
-    print s.gen_init()
+    print("(** INITIALIZATION **)")
+    print(s.gen_init())
     
 
 if __name__ == "__main__" :

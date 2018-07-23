@@ -1,5 +1,5 @@
 from gen_base import *
-import StringIO
+import io
 import sys
 
 class periodic_automaton(base_generator) :
@@ -37,7 +37,7 @@ class periodic_automaton(base_generator) :
 
     
     def gen_automaton(self) :
-        self.out = StringIO.StringIO()
+        self.out = io.StringIO()
         self.out.write("automaton {0}\n".format(self.get_automaton_name()))
         self.out.write("synclabs : " + self.gsync(self.tname, "arr_event") + ";\n")
 
@@ -58,7 +58,7 @@ class sporadic_automaton(periodic_automaton) :
         periodic_automaton.__init__(self, name, tname, period)
 
     def gen_automaton(self) :
-        self.out = StringIO.StringIO()
+        self.out = io.StringIO.StringIO()
         self.out.write("automaton {0}\n".format(self.get_automaton_name()))
         self.out.write("synclabs : " + self.gsync(self.tname, "arr_event") + ";\n")
 
@@ -91,7 +91,7 @@ class merge_automaton(base_generator) :
                                                         self.loc("idle"))
 
     def gen_automaton(self) :
-        self.out = StringIO.StringIO()
+        self.out = io.StringIO.StringIO()
         self.out.write(self.write_header())
         self.out.write("synclabs : " + mklist(self.ilist))
         self.out.write(", " + self.tname + ";\n")
@@ -145,7 +145,7 @@ class arrival_curve_automaton(base_generator) :
                                                            self.clock,
                                                            '0')
     def gen_automaton(self) :
-        self.out = StringIO.StringIO()
+        self.out = io.StringIO.StringIO()
         self.out.write(self.write_header())
         self.out.write("synclabs : {0};\n".format(self.tname))
         
