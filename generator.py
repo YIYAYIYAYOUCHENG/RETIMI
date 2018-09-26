@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import argparse
 import re
 
@@ -8,6 +10,9 @@ from gen_arrival import *
 
 import sys
 import os
+
+imitator_command = "imitator.sh" 
+
 
 def print_list(out, f, ll, sep = ",") :
     """ 
@@ -67,6 +72,16 @@ def parse_periodic(l) :
         prop_extract(x, 'period', per)
     return per
 
+def parse_periodic_with_offset(l) :
+    per = {}
+    l = l.strip()
+    s = l.split(',')
+    for x in s :
+        prop_extract(x, 'name', per)
+        prop_extract(x, 'period', per)
+        prop_extract(x, 'offset', per)
+    return per
+
 
 def parse_merge(l) :
     mer = {}
@@ -93,7 +108,7 @@ def parse_ptask(l) :
         prop_extract(x, 'name', task)
         prop_extract(x, 'ctime', task)
         prop_extract(x, 'period', task)
-        prop_extract(x, 'deadline', task)        
+        prop_extract(x, 'deadline', task)
         prop_extract(x, 'max_inst', task)
     return task
 
@@ -123,8 +138,12 @@ def parse_input(inputfile) :
 
     ll = []
     tnames = []
+    nl = 0
     for l in lines :
+        nl = nl + 1
         if l.startswith("--"):
+            continue
+        elif l.strip() == '' :
             continue
         elif l.startswith('task') :
             l = l.lstrip('task')
@@ -161,6 +180,10 @@ def parse_input(inputfile) :
             l = l.lstrip('periodc')
             per = parse_periodic(l)
             ll.append(periodic_automaton(per['name']+"_arr", per['name'], per['period']))
+        elif l.startswith('offset_periodic') :
+            l = l.lstrip('offset_periodc')
+            per = parse_periodic_with_offset(l)
+            ll.append(periodic_offset_automaton(per['name']+"_arr", per['name'], per['period'], per['offset']))
         elif l.startswith('sporadic') :
             l = l.lstrip('sporadic')
             per = parse_periodic(l)
@@ -175,6 +198,7 @@ def parse_input(inputfile) :
             ll.append(arrival_curve_automaton(cur['name'], cur['tname'], cur['burst'], cur['period']))
         else :
             print("ERROR in parsing the input file")
+            print("At line: ", nl);
             exit
     ll.append(miss_automaton("dline", tnames))
     return ll
@@ -267,15 +291,15 @@ def main() :
     # if necessary, runs imitator
     if not args.norun :
         if args.cover :
-            cmd = "../IMITATOR32 {0} {1} -mode cover -incl -merge -with-log".format(imifile,v0file)
-            if args.cart : 
+            cmd = "{0} {1} {2} -mode cover -incl -merge -with-log".format(imitator_command, imifile, v0file)
+            if args.cart :
                 cmd = cmd + " -cart"
                 if args.step > -1 :
                     cmd = cmd + " -step {0}".format(args.step)
         elif args.inverse :
-            cmd = "../IMITATOR32 {0} {1} -mode inversemethod -incl -merge -with-log".format(imifile,v0file)
+            cmd = "{0} {1} {2} -mode inversemethod -incl -merge ".format(imitator_command, imifile, v0file)
         else :
-            cmd = "../IMITATOR32 {0} -mode reachability -incl -merge -with-log".format(imifile)
+            cmd = "{0} {1} -mode reachability -incl -merge ".format(imitator_command, imifile)
 
         if args.depth > -1 :
             cmd = cmd + " -depth-limit {0}".format(args.depth)

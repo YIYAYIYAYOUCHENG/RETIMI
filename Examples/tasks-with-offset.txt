@@ -1,0 +1,13 @@
+-- the arrival automata
+offset_periodic name = tau1, period = 10, offset = [0..10]
+offset_periodic name = tau2, period = 12, offset = 0
+offset_periodic name = tau3, period = 20, offset = 0
+
+-- the task automata: when using "task"
+-- we cannot define ctime as an unbound parameter
+task name = tau1, ctime = 2, deadline = 10
+task name = tau2, ctime = 5, deadline = 12
+task name = tau3, ctime = 5, deadline = 12
+
+-- when offsets are different from 0, we must analyse the entire schedule
+sched CPU1,tau1,tau2,tau3

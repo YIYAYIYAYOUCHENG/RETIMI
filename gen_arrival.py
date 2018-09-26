@@ -28,6 +28,7 @@ class periodic_automaton(base_generator) :
                                                            self.loc("arr"), 
                                                            self.x_clock,
                                                            self.PER)
+
     def gen_init_param(self):
         if self.ini_period == "" or self.ini_period.find("..") != -1 or self.ini_period.find("[") != -1 : 
             per = self.ini_period.strip('[').strip(']')
@@ -53,6 +54,66 @@ class periodic_automaton(base_generator) :
 
         return self.out.getvalue()
 
+
+class periodic_offset_automaton(periodic_automaton) :
+    def __init__(self, name, tname, period = "", offset = "") :
+        periodic_automaton.__init__(self, name, tname, period)
+        self.ini_offset = str(offset)
+        self.OFF = self.prefix("Off")
+
+    def gen_parameters(self) :
+        s = periodic_automaton.gen_parameters(self)
+        if self.ini_offset == "" or self.ini_offset.find("..") != -1 or self.ini_offset.find("[") != -1 : 
+            return s + ',' + self.OFF
+        else : return s + ', ' + self.OFF  + " = " + self.ini_offset
+
+    def gen_parvalues(self) :
+        return periodic_automaton.gen_init_param(self) + self.OFF + " = " + stripsq(self.ini_offset)
+
+    def gen_init(self) :
+        return periodic_automaton.gen_init_param(self) + "    loc[{0}] = {1} & {2} = {3} &\n".format(self.get_automaton_name(), 
+                                                                                                    self.loc("offset"), 
+                                                                                                    self.x_clock,
+                                                                                                    '0')
+
+    def gen_init_param(self):
+        if self.ini_offset == "" or self.ini_offset.find("..") != -1 or self.ini_offset.find("[") != -1 : 
+            off = self.ini_offset.strip('[').strip(']')
+            loff = off.split("..")
+            if len(loff) > 1 :
+                return periodic_automaton.gen_init_param(self) + "    {1} <= {0} & {0} <= {2} & \n".format(self.OFF, loff[0], loff[1])
+            
+        return periodic_automaton.gen_init_param(self)
+
+        
+        
+    def gen_automaton(self) :
+        self.out = io.StringIO()
+        self.out.write("automaton {0}\n".format(self.get_automaton_name()))
+        self.out.write("synclabs : " + self.gsync(self.tname, "arr_event") + ";\n")
+
+        # waits for offset, then activates task and goes to the periodic behaviour
+        self.out.write(self.wloc("offset",
+                                 inv =  self.x_clock + "<=" + self.OFF,
+                                 stop = "wait"))
+        self.out.write(self.wgrd(cond = self.x_clock + "=" + self.OFF,
+                                 sync = self.gsync(self.tname, "arr_event"),
+                                 act = self.x_clock + "'=0",
+                                 target ="arr"))
+
+        # periodic behaviour
+        self.out.write(self.wloc("arr", 
+                                 inv = self.x_clock + "<=" + self.PER,
+                                 stop = "wait"))
+        self.out.write(self.wgrd(cond = self.x_clock + "=" + self.PER,
+                                 sync = self.gsync(self.tname, "arr_event"),
+                                 act = self.x_clock + "'= 0",
+                                 target = "arr"))
+        self.out.write("end\n")
+
+        return self.out.getvalue()
+        
+    
 class sporadic_automaton(periodic_automaton) :
     def __init__(self, name, tname, period="") :
         periodic_automaton.__init__(self, name, tname, period)

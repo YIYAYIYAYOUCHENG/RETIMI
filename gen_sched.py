@@ -46,7 +46,7 @@ class sched_automaton(base_generator) :
 
     def gen_init(self) :
         s = "    loc[sched_{0}] = {1} &\n".format(self.name, self.loc_name)
-        s = s #+ "    {0} = 0 &\n".format(self.clock)
+        #s = s #+ "    {0} = 0 &\n".format(self.clock)
         return s
 
     def gen_automaton(self) :
@@ -281,9 +281,6 @@ def main(args) :
     task_list = args[2:]
 
     s = sched_automaton(args[1], task_list)
-
-    # print("(** DECLARATIONS **)")
-    # print(s.gen_base())
 
     print("(** CLOCKS **)")
     print(s.gen_clocks())
