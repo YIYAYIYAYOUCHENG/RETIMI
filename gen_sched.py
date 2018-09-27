@@ -79,7 +79,8 @@ class sched_automaton(base_generator) :
                 self.generate_ending_location(state, endstate)
 
             self.generate_arrival_locations(arr_states)
-        self.out.write("loc {0} : while True wait {{}}\n".format(self.loc("stop")))
+        #self.out.write("loc {0} : while True wait {{}}\n".format(self.loc("stop")))
+        self.out.write("loc {0} : invariant True\n".format(self.loc("stop")))
         self.out.write("end\n\n")
 
         return self.out.getvalue()
@@ -208,7 +209,7 @@ class sched_automaton(base_generator) :
         return arr_states
 
     def generate_ending_location(self, state, endstate) :
-        self.out.write("urgent loc {0} : while True wait\n".format(endstate, self.clock))
+        self.out.write("urgent loc {0} : invariant True \n".format(endstate, self.clock))
         s = self.remove_first(state)
         x = self.find_first(s)
         if (x != 0) :
@@ -250,12 +251,12 @@ class sched_automaton(base_generator) :
             if f != 0 :
                 ars = self.loc_name + self.build_arrival_state(s, a)
                 s1 = self.loc_name + self.build_preempt_state(self.set_arrival(s,a))
-                self.out.write("urgent loc {0} : while True wait\n".format(ars,self.clock))
+                self.out.write("urgent loc {0} : invariant True \n".format(ars,self.clock))
                 self.out.write("    when True sync {0} goto {1};\n".format(self.gsync(self.ids[f-1], "pre"),s1,self.clock))
-                self.out.write("urgent loc {0} : while True wait\n".format(s1,self.clock))
+                self.out.write("urgent loc {0} : invariant True\n".format(s1,self.clock))
                 self.out.write("    when True sync {0} goto {1};\n".format(self.gsync(self.ids[a],"dis"),s2,self.clock))
             else :
-                self.out.write("urgent loc {0} : while True wait\n".format(ars,self.clock))
+                self.out.write("urgent loc {0} : invariant True\n".format(ars,self.clock))
                 self.out.write("    when True sync {0} goto {1};\n".format(self.gsync(self.ids[a],"dis"),s2,self.clock))
 
         self.out.write("\n")

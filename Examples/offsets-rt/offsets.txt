@@ -1,0 +1,17 @@
+-- computing response time in the presence of offsets
+-- Warning: When using "task" we cannot define ctime
+-- as an unbound parameter
+
+-- The arrival automata
+offset_periodic name = tau1, period = 10, offset = 0
+offset_periodic name = tau2, period = 12, offset = 4
+offset_periodic name = tau3, period = 18, offset = 0
+
+-- Task automata
+task name = tau1, ctime = 3, deadline = [0..10]
+task name = tau2, ctime = 4, deadline = [0..12]
+task name = tau3, ctime = 6, deadline = [0..18]
+
+-- When offsets are different from 0, we must analyse
+-- the entire schedule
+sched CPU1,tau1,tau2,tau3

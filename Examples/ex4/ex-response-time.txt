@@ -1,0 +1,17 @@
+-- Response time calculation
+
+-- We use the general task model (pdtask)
+-- Thus we can use the deadline as a parameter
+
+-- Compute the response time of every task
+-- analysis time: ~ 5sec.
+
+pdtask name=tau1, period=8,  ctime=1, deadline=[1..8] 
+pdtask name=tau2, period=12, ctime=3, deadline=[3..12]
+pdtask name=tau3, period=15, ctime=3, deadline=[3..15] 
+pdtask name=tau4, period=18, ctime=4, deadline=[4..18]
+
+-- The FP scheduler automaton
+sched CPU1, tau1, tau2, tau3, tau4
+
+

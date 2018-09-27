@@ -1,0 +1,16 @@
+-- Sensitivity analysis on sporadic, implicit deadline tasks
+
+-- We use the sporadic task model (stask)
+-- Thus we can use the ctime as a parameter
+
+-- Compute the response time of every task
+-- analysis time: ~ 5sec.
+
+stask name=tau1, period=8,  ctime=[0..8]
+stask name=tau2, period=12, ctime=[0..12]
+stask name=tau3, period=15, ctime=3 
+
+
+-- The FP scheduler automaton
+sched CPU1, tau1, tau2, tau3
+

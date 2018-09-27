@@ -47,7 +47,7 @@ class periodic_automaton(base_generator) :
                                  stop = "wait"))
         self.out.write(self.wgrd(cond = self.x_clock + "=" + self.PER,
                                  sync = self.gsync(self.tname, "arr_event"),
-                                 act = self.x_clock + "'= 0",
+                                 act = ass(self.x_clock, "0"),
                                  target = "arr"))
         
         self.out.write("end\n")
@@ -98,7 +98,7 @@ class periodic_offset_automaton(periodic_automaton) :
                                  stop = "wait"))
         self.out.write(self.wgrd(cond = self.x_clock + "=" + self.OFF,
                                  sync = self.gsync(self.tname, "arr_event"),
-                                 act = self.x_clock + "'=0",
+                                 act = ass(self.x_clock, "0"),
                                  target ="arr"))
 
         # periodic behaviour
@@ -107,7 +107,7 @@ class periodic_offset_automaton(periodic_automaton) :
                                  stop = "wait"))
         self.out.write(self.wgrd(cond = self.x_clock + "=" + self.PER,
                                  sync = self.gsync(self.tname, "arr_event"),
-                                 act = self.x_clock + "'= 0",
+                                 act = ass(self.x_clock, "0"),
                                  target = "arr"))
         self.out.write("end\n")
 
@@ -119,7 +119,7 @@ class sporadic_automaton(periodic_automaton) :
         periodic_automaton.__init__(self, name, tname, period)
 
     def gen_automaton(self) :
-        self.out = io.StringIO.StringIO()
+        self.out = io.StringIO()
         self.out.write("automaton {0}\n".format(self.get_automaton_name()))
         self.out.write("synclabs : " + self.gsync(self.tname, "arr_event") + ";\n")
 
@@ -128,7 +128,7 @@ class sporadic_automaton(periodic_automaton) :
                                  stop = "wait"))
         self.out.write(self.wgrd(cond = self.x_clock + ">=" + self.PER,
                                  sync = self.gsync(self.tname, "arr_event"),
-                                 act = self.x_clock + "'= 0",
+                                 act = ass(self.x_clock, "0"),
                                  target = "arr"))
         
         self.out.write("end\n")
@@ -222,7 +222,7 @@ class arrival_curve_automaton(base_generator) :
                 tg = 'periodic'
             else:
                 tg = 'start' + str(i+1)
-            self.out.write(self.wgrd(cond = self.clock + '=0',
+            self.out.write(self.wgrd(cond = expr(self.clock, '=', '0'),
                                      sync = self.tname,
                                      act = '',
                                      target = tg))

@@ -2,7 +2,7 @@ def expr(l, s, r) :
     return l + " " + s + " " + r
 
 def ass(l, r) :
-    return l + "' = " + r
+    return l + " := " + r
 
 def mklist(ll, sym = ",") :
     n = len(ll)
@@ -59,8 +59,10 @@ class base_generator :
 
     def wloc(self, l, inv, stop) :
         if stop != "wait" : stop = "stop {{ {0} }}".format(stop)
-        else : stop = "wait {}"
-        return "loc {0} : while {1} {2}\n".format(self.loc(l), inv, stop)
+        else : # stop = "wait {}"
+            stop = ""
+        #return "loc {0} : while {1} {2}\n".format(self.loc(l), inv, stop)
+        return "loc {0} : invariant {1} {2}\n".format(self.loc(l), inv, stop)
 
     def wgrd(self, cond, sync, act, target) :
         if sync != "" : sync = "sync " + sync
