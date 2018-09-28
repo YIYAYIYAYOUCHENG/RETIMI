@@ -11,7 +11,7 @@ from gen_arrival import *
 import sys
 import os
 
-imitator_command = "imitator.sh" 
+imitator_command = "~/sw/IMITATOR/imitator/bin/imitator" 
 
 
 def print_list(out, f, ll, sep = ",") :
@@ -145,37 +145,19 @@ def parse_input(inputfile) :
             continue
         elif l.strip() == '' :
             continue
+        # Task automata
+        # General deadline (unbound parameters: D and T)
         elif l.startswith('task') :
             l = l.lstrip('task')
             task = parse_ptask(l)
             ll.append(task_automaton(task['name'], task['ctime'], task['deadline'], task['max_inst']))
             tnames.append(task['name'])
-        elif l.startswith('pdtask') :
-            l = l.lstrip('pdtask')
+        # Implicit deadline (unbound parameters: C and T)
+        elif l.startswith('impl') :
+            l = l.lstrip ('impl') 
             task = parse_ptask(l)
-            ll.append(task_automaton(task['name'], task['ctime'], task['deadline'], task['max_inst']))
-            ll.append(periodic_automaton(task['name']+"_arr", task['name'], task['period']))
-            tnames.append(task['name'])
-        elif l.startswith('ptask') :
-            l = l.lstrip('ptask')
-            task = parse_ptask(l)
-            ll.append(task_impldline_automaton(task['name'], task['ctime'], task['name']+"_arr"))
-            ll.append(periodic_automaton(task['name']+"_arr", task['name'], task['period']))
-            tnames.append(task['name'])
-        elif l.startswith('stask') :
-            l = l.lstrip('stask')
-            task = parse_ptask(l)
-            ll.append(task_impldline_automaton(task['name'], task['ctime'], task['name']+"_arr"))
-            ll.append(sporadic_automaton(task['name']+"_arr", task['name'], task['period']))
-            tnames.append(task['name'])
-        elif l.startswith("sched") :
-            l = l.lstrip("sched")
-            s = [x.strip() for x in l.split(',')]
-            ll.append(sched_automaton(s[0], s[1:], False))
-        elif l.startswith("idlesched") :
-            l = l.lstrip("idlesched")
-            s = [x.strip() for x in l.split(',')]
-            ll.append(sched_automaton(s[0], s[1:], True))
+            ll.append(task_impldline_automaton(task['name'], task['ctime'], task['name']+"_arr"))            
+        # Arrival automata
         elif l.startswith('periodic') :
             l = l.lstrip('periodc')
             per = parse_periodic(l)
@@ -196,6 +178,34 @@ def parse_input(inputfile) :
             l = l.lstrip('curve') 
             cur = parse_curve(l)
             ll.append(arrival_curve_automaton(cur['name'], cur['tname'], cur['burst'], cur['period']))
+        # Complete models (task + arrival automata)
+        elif l.startswith('pdtask') :
+            l = l.lstrip('pdtask')
+            task = parse_ptask(l)
+            ll.append(task_automaton(task['name'], task['ctime'], task['deadline'], task['max_inst']))
+            ll.append(periodic_automaton(task['name']+"_arr", task['name'], task['period']))
+            tnames.append(task['name'])
+        elif l.startswith('ptask') :
+            l = l.lstrip('ptask')
+            task = parse_ptask(l)
+            ll.append(task_impldline_automaton(task['name'], task['ctime'], task['name']+"_arr"))
+            ll.append(periodic_automaton(task['name']+"_arr", task['name'], task['period']))
+            tnames.append(task['name'])
+        elif l.startswith('stask') :
+            l = l.lstrip('stask')
+            task = parse_ptask(l)
+            ll.append(task_impldline_automaton(task['name'], task['ctime'], task['name']+"_arr"))
+            ll.append(sporadic_automaton(task['name']+"_arr", task['name'], task['period']))
+            tnames.append(task['name'])
+        # Schedulers    
+        elif l.startswith("sched") :
+            l = l.lstrip("sched")
+            s = [x.strip() for x in l.split(',')]
+            ll.append(sched_automaton(s[0], s[1:], False))
+        elif l.startswith("idlesched") :
+            l = l.lstrip("idlesched")
+            s = [x.strip() for x in l.split(',')]
+            ll.append(sched_automaton(s[0], s[1:], True))
         else :
             print("ERROR in parsing the input file")
             print("At line: ", nl);
@@ -250,11 +260,9 @@ def main() :
     
     parser.add_argument('file')
     parser.add_argument('--norun', action='store_true')
-    parser.add_argument('--cover', action='store_true')
-    parser.add_argument('--inverse', action='store_true')
-    parser.add_argument('--depth', default = -1)
     parser.add_argument('--cart', action='store_true')
-    parser.add_argument('--step', default = -1)
+    parser.add_argument('--xmax', default = 50)
+    parser.add_argument('--ymax', default = 50)
 
     args = parser.parse_args()
 
@@ -262,19 +270,19 @@ def main() :
 
     inputfile = args.file
     imifile = args.file 
-    v0file = args.file
+    # v0file = args.file
     statesfile = args.file
 
     if not inputfile.endswith(".txt") :
         imifile = imifile + ".imi"
-        v0file = v0file + ".v0"
+        # v0file = v0file + ".v0"
         statesfile = statesfile + ".states"
     else :
         imifile = inputfile[0:-4] + ".imi"
-        v0file = v0file[0:-4] + ".v0"
+        # v0file = v0file[0:-4] + ".v0"
         statesfile = statesfile[0:-4] + ".states"
         
-    print("Output files:", imifile, v0file)
+    print("Output file:", imifile)
 
     out = open(imifile, 'w')
 
@@ -283,38 +291,25 @@ def main() :
     generate_imi(out, ll)
 
     # Generate the v0 file
-    v0 = open(v0file, 'w')
-    print_list(v0, lambda x: x.gen_parvalues(), ll, '&')
+    #v0 = open(v0file, 'w')
+    #print_list(v0, lambda x: x.gen_parvalues(), ll, '&')
 
-    v0.close()
+    #v0.close()
 
     # if necessary, runs imitator
     if not args.norun :
-        if args.cover :
-            cmd = "{0} {1} {2} -mode cover -incl -merge -with-log".format(imitator_command, imifile, v0file)
-            if args.cart :
-                cmd = cmd + " -cart"
-                if args.step > -1 :
-                    cmd = cmd + " -step {0}".format(args.step)
-        elif args.inverse :
-            cmd = "{0} {1} {2} -mode inversemethod -incl -merge ".format(imitator_command, imifile, v0file)
-        else :
-            cmd = "{0} {1} -mode reachability -incl -merge ".format(imitator_command, imifile)
+        cmd = "{0} -mode EF -merge -incl ".format(imitator_command)
+        if args.cart :
+            cmd = cmd + " -output-cart "
+            if args.xmax != 50 :
+                cmd = cmd + " -output-cart-x-max {0} ".format(args.xmax)
+            if args.ymax != 50 :
+                cmd = cmd + " -output-cart-y-max {0} ".format(args.ymax)
 
-        if args.depth > -1 :
-            cmd = cmd + " -depth-limit {0}".format(args.depth)
-
+        cmd = cmd + imifile
+                
         print("Running command: ", cmd)
         os.system(cmd)
-
-        if not args.cover :
-            dmiss = search_dmiss(statesfile)                    
-            if not dmiss : 
-                print("No Deadline misses")
-            else :
-                print("DEADLINE MISS FOUND!!")
-
-
 
 
 

@@ -1,0 +1,10 @@
+-- Compute response time of task
+-- in the case of deadline larger than period
+
+periodic name=tau1, period=4
+task     name=tau1, ctime=2, deadline=4
+
+periodic name=tau2, period=10
+task     name=tau2, ctime=5, deadline=[0..30]
+
+sched CPU, tau1, tau2

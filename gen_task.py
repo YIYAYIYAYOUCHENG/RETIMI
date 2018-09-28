@@ -32,9 +32,9 @@ class task_automaton(base_generator) :
         self.max_inst = str(max_inst)
     
     def gen_clocks(self) :
-        return "{0}".format(self.c_clock)
+        #return "{0}".format(self.c_clock)
         #return "{0}, {1}, {2}".format(self.c_clock, self.d_clock, self.urgent)
-        #return "{0}, {1}".format(self.c_clock, self.d_clock)
+        return "{0}, {1}".format(self.c_clock, self.d_clock)
 
     def gen_discrete(self) :
         return "{0}".format(self.n_inst)
@@ -52,7 +52,7 @@ class task_automaton(base_generator) :
 
     def gen_init(self) :
         s = "    loc[{0}] = {1} &\n".format(self.get_automaton_name(), self.loc("idle"))
-        s = s + "    True &" #{0} = 0 &".format(self.urgent)
+        s = s + "    {0} = 0 &".format(self.d_clock)
         s = s + "    {0} = 0 &\n".format(self.c_clock)
         s = s + "    {0} = 0 &\n".format(self.n_inst)
         s = s + "    {0} >= 0 &\n".format(self.DTIME)
@@ -70,35 +70,34 @@ class task_automaton(base_generator) :
         s = s + self.wloc("idle", "True", "wait")
         s = s + self.wgrd("True", 
                           sync = self.sync("arr_event"),
-                          #act = ass(self.urgent, "0"),
-                          act = "", #ass(self.urgent, "0"),
+                          act = "", 
                           target = "act_event")
+
         
         s = s + "urgent " + self.wloc("act_event", 
-                          #inv = self.urgent + " <= 0",
                           inv = " True",
                           stop = "wait")
         s = s + self.wgrd("True", #expr(self.urgent, "=", "0"), 
                           sync = self.sync("arr"),
-                          act = mklist([ass(self.c_clock, "0"), ass(self.n_inst, "1")]),
-                          #act = mklist([ass(self.c_clock, "0"), ass(self.d_clock, "0"), ass(self.n_inst, "1")]),
+                          act = mklist([ass(self.c_clock, "0"), ass(self.n_inst, "1"), ass(self.d_clock, '0')]),
                           target = "act")
+
         
         s = s + self.wloc("act", 
-                          inv = expr(self.x_clock, "<=", self.DTIME), 
+                          inv = expr(self.d_clock, "<=", self.DTIME), 
                           stop = self.c_clock)
         s = s + self.wgrd(cond = "True",
                           sync = self.sync("dis"),
                           act = "",
                           target = "exe")
-        s = s + self.wgrd(cond = expr(self.x_clock, " >= ", self.DTIME),
+        s = s + self.wgrd(cond = expr(self.d_clock, " >= ", self.DTIME),
                           sync = self.sync("miss"),
                           act = "",
                           target = "miss")
         s = s + self.wgrd(cond = self.n_inst + "<" + self.max_inst,
                           sync = self.sync("arr_event"),
-                          act = mklist([ass(self.n_inst, self.n_inst+"+1")]),
-                          #act = mklist([ass(self.n_inst, self.n_inst+"+1"), ass(self.d_clock,"0")]),
+                          #act = mklist([ass(self.n_inst, self.n_inst+"+1")]),
+                          act = mklist([ass(self.n_inst, self.n_inst+"+1"), ass(self.d_clock,"0")]),
                           target = "act")
         s = s + self.wgrd(cond = self.n_inst + "=" + self.max_inst,
                           sync = self.sync("arr_event"),
@@ -108,24 +107,25 @@ class task_automaton(base_generator) :
                           sync = self.sync("arr_event"),
                           act = "",
                           target = "act")
+
         
         s = s + self.wloc("exe", 
-                          inv = mklist([expr(self.x_clock, "<=", self.DTIME), 
+                          inv = mklist([expr(self.d_clock, "<=", self.DTIME), 
                                         expr(self.c_clock, "<=", expr(self.CTIME, "*", self.n_inst))], "&"), 
                           stop = "wait")
         s = s + self.wgrd(cond = self.c_clock + "<" + self.CTIME + "*" + self.n_inst,
                           sync = self.sync("pre"),
                           act = "",
                           target = "act")
-        s = s + self.wgrd(cond = mklist([expr(self.x_clock, ">=", self.DTIME),
+        s = s + self.wgrd(cond = mklist([expr(self.d_clock, ">=", self.DTIME),
                                          expr(self.c_clock, "<", expr(self.CTIME, "*", self.n_inst))], "&"),
                           sync=self.sync("miss"), 
                           act="",
                           target="miss")
         s = s + self.wgrd(cond = self.n_inst + "<" + self.max_inst,
                           sync = self.sync("arr_event"),
-                          act = mklist([ass(self.n_inst, self.n_inst +"+1")]),
-                                        #ass(self.d_clock, "0")]),
+                          act = mklist([ass(self.n_inst, self.n_inst +"+1"),
+                                        ass(self.d_clock, "0")]),
                           target="exe")
         s = s + self.wgrd(cond = self.n_inst + "=" + self.max_inst,
                           sync = self.sync("arr_event"),
