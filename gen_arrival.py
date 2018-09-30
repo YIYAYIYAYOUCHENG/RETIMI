@@ -124,7 +124,7 @@ class sporadic_automaton(periodic_automaton) :
         self.out.write("synclabs : " + self.gsync(self.tname, "arr_event") + ";\n")
 
         self.out.write(self.wloc("arr", 
-                                 inv = self.x_clock + "<=" + self.PER,
+                                 inv = "True", #self.x_clock + "<=" + self.PER,
                                  stop = "wait"))
         self.out.write(self.wgrd(cond = self.x_clock + ">=" + self.PER,
                                  sync = self.gsync(self.tname, "arr_event"),
